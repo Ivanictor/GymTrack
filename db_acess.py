@@ -41,7 +41,23 @@ def create_table_if_not_exists():
         )
         """
     )
-    
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS treinos_dia(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        data_treino TEXT NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        exercicio_id INTEGER NOT NULL,
+        repeticoes INTEGER NOT NULL,
+        series INTEGER NOT NULL,
+        peso REAL,
+        tempo_corrida INTEGER,
+        velocidade REAL,
+        tempo_treino INTEGER NOT NULL
+        )
+        """
+    )
+        
 
     conexao.commit()
     conexao.close()
@@ -94,6 +110,8 @@ def buscar_senha(email, senha):
     return check_password_hash(senha_hash, senha)
 
 def criar_exercicio(exercicio, tipo):
+    create_table_if_not_exists()
+
     conexao = sqlite3.connect("gymtrack.db")
     cursor = conexao.cursor()
 
@@ -109,6 +127,7 @@ def criar_exercicio(exercicio, tipo):
     conexao.close()
 
 def listar_exercicios(tipo=None):
+    create_table_if_not_exists()
     conexao = sqlite3.connect("gymtrack.db")
 
     if tipo is None:
@@ -141,15 +160,27 @@ def busca_id_por_exercicio(exercicio):
 
     return registro[0]
 
-def busca_exercicio_por_id(id):
+def busca_exercicio_por_id(exercicio_id):
     conexao = sqlite3.connect("gymtrack.db")
     cursor = conexao.cursor()
 
-    registro = cursor.execute("SELECT exercicio FROM exercicio_lista WHERE id = ?", (id,)).fetchone()
+    registro = cursor.execute("SELECT exercicio FROM exercicio_lista WHERE id = ?", (exercicio_id,)).fetchone()
     conexao.close()
 
     if not registro:
-        raise Exception(f"ID '{id}' não encontrado")
+        raise Exception(f"ID '{exercicio_id}' não encontrado")
+
+    return registro[0]
+
+def busca_tipo_por_exercicio(exercicio):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    registro = cursor.execute("SELECT tipo FROM exercicio_lista WHERE exercicio = ?", (exercicio,)).fetchone()
+    conexao.close()
+
+    if not registro:
+         raise Exception(f"Exercício {exercicio} não encontrado")
 
     return registro[0]
 
@@ -224,4 +255,44 @@ def atualizar_treino(df):
         )
 
     conexao.commit()
+    conexao.close()
+
+def exercicios_por_treino(nome_treino, usuario_id):
+    conexao = sqlite3.connect("gymtrack.db")
+
+    df = pd.read_sql_query(
+        """
+        SELECT
+            el.exercicio,
+            tl.repeticoes,
+            tl.series
+        FROM treinos_lista tl
+        JOIN exercicio_lista el
+            ON tl.exercicio_id = el.id
+        WHERE tl.nome_treino = ?
+        AND tl.usuario_id = ?
+        """,
+        conexao,
+        params=(nome_treino, usuario_id)
+    )
+
+    conexao.close()
+
+    return df
+
+def enviar_exercicios(data_treino, df_treino, usuario, tempo):
+    conexao = sqlite3.connect("gymtrack.db")
+
+    df_treino = df_treino.copy()
+    df_treino["data_treino"] = data_treino
+    df_treino["usuario_id"] = usuario
+    df_treino["tempo_treino"] = tempo
+
+    df_treino.to_sql(
+        "treinos_dia",
+        conexao,
+        if_exists="append",
+        index=False
+    )
+
     conexao.close()

@@ -60,6 +60,11 @@ with aba_registrar_treino:
     nome_treino = st.text_input("Nome do treino")
 
     df_exercicios = listar_exercicios(tipo=None)
+
+    if df_exercicios.empty:
+        st.warning("Não existem exercícios cadastrados. Cadastre exercícios antes de criar um treino.")
+        st.stop()
+
     lista_exercicios = df_exercicios["exercicio"]
 
     exercicios = []
