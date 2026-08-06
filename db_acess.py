@@ -23,7 +23,7 @@ def create_table_if_not_exists():
         """
         CREATE TABLE IF NOT EXISTS exercicio_lista(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        exercicio TEXT NOT NULL,
+        exercicio TEXT NOT NULL UNIQUE COLLATE NOCASE,
         tipo TEXT NOT NULL
         )
         """
@@ -115,16 +115,26 @@ def criar_exercicio(exercicio, tipo):
     conexao = sqlite3.connect("gymtrack.db")
     cursor = conexao.cursor()
 
-    cursor.execute("""
-        INSERT INTO exercicio_lista (
-            exercicio,
-            tipo
-        )
-        VALUES (?, ?)
-    """, (exercicio, tipo))
-    
-    conexao.commit()
-    conexao.close()
+    registro = cursor.execute(
+        "SELECT id, exercicio FROM exercicio_lista WHERE exercicio = ? COLLATE NOCASE", 
+        (exercicio,)).fetchone()
+
+    if registro:
+        conexao.close()
+        return False
+
+    else:
+        cursor.execute("""
+            INSERT INTO exercicio_lista (
+                exercicio,
+                tipo
+            )
+            VALUES (?, ?)
+        """, (exercicio, tipo))
+        
+        conexao.commit()
+        conexao.close()
+        return True
 
 def listar_exercicios(tipo=None):
     create_table_if_not_exists()
@@ -296,3 +306,93 @@ def enviar_exercicios(data_treino, df_treino, usuario, tempo):
     )
 
     conexao.close()
+
+def visualizar_treino_diario(usuario_id, data_treino=None, data_inicio=None, data_final=None):
+    conexao = sqlite3.connect("gymtrack.db")
+
+    query = """
+    SELECT
+        td.id,
+        td.data_treino,
+        el.exercicio,
+        td.repeticoes,
+        td.series,
+        td.peso,
+        td.tempo_corrida,
+        td.velocidade,
+        td.tempo_treino
+    FROM treinos_dia td
+    JOIN exercicio_lista el
+        ON td.exercicio_id = el.id
+    WHERE td.usuario_id = ?
+    """
+    order = "ORDER BY data_treino DESC"
+
+    params = [usuario_id]
+
+    if data_treino:
+        query += " AND data_treino = ?"
+        params.append(data_treino)
+
+    if data_inicio:
+        query += " AND data_treino >= ?"
+        params.append(data_inicio)
+
+    if data_final:
+        query += " AND data_treino <= ?"
+        params.append(data_final)
+
+    query += order
+
+    df = pd.read_sql_query(
+        query,
+        conexao,
+        params=params
+    )
+
+    conexao.close()
+
+    return df
+
+def atualizar_treino_realizado(df_editado):
+
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    try:
+        for _, linha in df_editado.iterrows():
+            exercicio_id = busca_id_por_exercicio(linha["exercicio"])
+
+            cursor.execute(
+                """
+                UPDATE treinos_dia
+                SET exercicio_id = ?,
+                    repeticoes = ?,
+                    series = ?,
+                    peso = ?,
+                    tempo_corrida = ?,
+                    velocidade = ?,
+                    tempo_treino = ?,
+                    data_treino = ?
+                WHERE id = ?
+                """,
+                (
+                    exercicio_id,
+                    linha["repeticoes"],
+                    linha["series"],
+                    linha["peso"],
+                    linha["tempo_corrida"],
+                    linha["velocidade"],
+                    linha["tempo_treino"],
+                    linha["data_treino"],
+                    linha["id"],  
+                ),
+            )
+
+        conexao.commit()
+
+    finally:
+        conexao.close()
+
+def dados_dashboard():
+    return True

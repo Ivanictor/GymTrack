@@ -32,6 +32,8 @@ treino = st.selectbox(
     index=lista_treinos.index("Manual"),
 )
 
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 exercises = []
 sets = []
 repetitions = []
@@ -69,6 +71,7 @@ if treino == "Manual":
             key=f"serie_{i}"
         ))
 
+
         if exercises[i]:
             tipo_exercicio = busca_tipo_por_exercicio(exercises[i])
         else:
@@ -83,7 +86,7 @@ if treino == "Manual":
             speeds.append(st.number_input(
                 f"Velocidade do exercício {i+1}, em km/h",
                 min_value=0.5,
-                value=6,
+                value=6.0,
                 step=0.1
             ))
             time_run.append(st.number_input(
@@ -111,6 +114,8 @@ if treino == "Manual":
                 value=0,
                 step=1
             ))
+
+            st.divider()
 else:
     
     workout_df = exercicios_por_treino(treino, id_usuario)
@@ -164,7 +169,7 @@ else:
             speeds.append(st.number_input(
                 f"Velocidade do exercício {i+1}, em km/h",
                 min_value=0.5,
-                value=6,
+                value=6.0,
                 step=0.1,
                 key=f"{treino}_velocidade_{i}"
             ))
@@ -194,24 +199,28 @@ else:
                 step=1
             ))
 
-    if st.button("Enviar"):
-        erros = []
+        st.divider()
 
-        for exercise in exercises:
-            if exercise == "":
-                erros.append("Selecione uma atividade")
-        if erros:
-            st.error("\n".join(erros))
-        else:
-            df_envio = pd.DataFrame()
+if st.button("Enviar"):
+    erros = []
 
-            df_envio["exercicio"] = exercises
-            df_envio["exercicio_id"] = df_envio["exercicio"].apply(busca_id_por_exercicio)
-            df_envio["repeticoes"] = repetitions
-            df_envio["series"] = sets
-            df_envio["peso"] = weights
-            df_envio["velocidade"] = speeds
-            df_envio["tempo_corrida"] = time_run
+    for exercise in exercises:
+        if exercise == "":
+            erros.append("Selecione uma atividade")
+    if erros:
+        st.error("\n".join(erros))
+    else:
+        df_envio = pd.DataFrame()
 
-            enviar_exercicios(data_treino, df_envio, id_usuario, tempo)
-            st.success("Treino cadastrado")
+        df_envio["exercicio"] = exercises
+        df_envio["exercicio_id"] = df_envio["exercicio"].apply(busca_id_por_exercicio)
+        df_envio["repeticoes"] = repetitions
+        df_envio["series"] = sets
+        df_envio["peso"] = weights
+        df_envio["velocidade"] = speeds
+        df_envio["tempo_corrida"] = time_run
+
+        df_envio = df_envio.drop(columns=["exercicio"])
+
+        enviar_exercicios(data_treino, df_envio, id_usuario, tempo)
+        st.success("Treino enviado")

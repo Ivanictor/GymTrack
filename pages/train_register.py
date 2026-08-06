@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 from db_acess import (criar_exercicio, 
                       listar_exercicios, 
                       criar_treino, 
@@ -8,36 +9,56 @@ from db_acess import (criar_exercicio,
                       visualizar_treino, 
                       atualizar_treino)
 
-st.title("GymTrack 🦾 - Registro de Treinos")
+st.title("GymTrack 🦾 - Cadastro de Treinos")
 
 aba_registrar_treino, aba_registrar_exercicio, aba_visualizar = st.tabs(
-    ["Registrar treinos", "Registrar exercício", "Visualizar treinos"]
+    ["Cadastrar treinos", "Registrar exercício", "Visualizar treinos"]
     )
 with aba_registrar_exercicio:
 
-    st.header("Registrar exercício")
+    with st.form("cadastro_exercicio", clear_on_submit=True):
+        st.header("Cadastrar exercício")
 
-    exercicio = st.text_input("Exercício")
+        exercicio = st.text_input("Exercício")
 
-    tipo = st.radio("Tipo de treino", ["Superior", "Inferior", "Aeróbico"])
+        tipo = st.radio("Tipo de treino", ["Superior", "Inferior", "Aeróbico"])
 
-    if st.button("Enviar"):
-        erros = []
+        enviar = st.form_submit_button("Enviar")
 
-        if not exercicio.strip():
-            erros.append("Informe o nome do exercício")
+        if enviar:
+            erros = []
 
-        if tipo is None:
-            erros.append("Informe o tipo do exercício")
+            if not exercicio.strip():
+                erros.append("Informe o nome do exercício")
 
-        if erros:
-            st.error("\n".join(erros))
-        else:
-            criar_exercicio(exercicio, tipo)
-            st.success("Exercício cadastrado")
+            if tipo is None:
+                erros.append("Informe o tipo do exercício")
+
+            if erros:
+                st.error("\n".join(erros))
+            else:
+                resultado = criar_exercicio(exercicio, tipo)
+
+                if not resultado:
+                    st.error("Exercício já criado")
+                else:
+                    st.success("Exercício cadastrado")
+                    time.sleep(2)
+                    st.rerun()
 
 
-    st.write("Lista de exercícios")
+    st.markdown(
+    """
+    <p style="
+        font-family: Arial;
+        font-size: 30px;
+        font-weight:bold;
+    ">
+        Lista de Exercícios
+    </p>
+    """,
+    unsafe_allow_html=True,
+)
 
     tipo = st.radio(
             "Tipo de treino", ["Superior", "Inferior", "Aeróbico"], 
@@ -49,11 +70,11 @@ with aba_registrar_exercicio:
         "tipo": "Tipo"
     })
 
-    st.dataframe(df, hide_index=True)
+    st.dataframe(df[["Exercício", "Tipo"]], hide_index=True)
     
 with aba_registrar_treino:
 
-    st.header("Registrar treinos")
+    st.header("Cadastrar treinos")
 
     usuario = st.session_state["id"]
 
@@ -143,6 +164,7 @@ with aba_visualizar:
         df_editado = st.data_editor(
             df_treinos_usuario,
             column_config={
+                "id": None,
                 "exercicio": st.column_config.SelectboxColumn(
                     "Exercício",
                     options=lista_exercicios,

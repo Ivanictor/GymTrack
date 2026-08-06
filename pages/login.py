@@ -1,5 +1,6 @@
 import streamlit as st
 from db_acess import buscar_cadastro, buscar_senha
+import time
 
 st.title("GymTrack 🦾- Tela de Login")
 
@@ -28,6 +29,8 @@ if st.button("Enviar"):
 
     else:
         st.success("Login bem sucedido")
+        st.balloons()
+        time.sleep(2)
 
         usuario = buscar_cadastro(email)
 
@@ -36,7 +39,7 @@ if st.button("Enviar"):
         st.session_state["email"] = usuario[2]
         st.session_state["admin"] = usuario[4]
 
-        st.balloons()
+        st.rerun()
         st.switch_page("pages/train_register.py")
 
     
