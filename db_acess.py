@@ -14,7 +14,8 @@ def create_table_if_not_exists():
         usuario TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
         senha_hash TEXT NOT NULL,
-        admin INTEGER NOT NULL DEFAULT 0
+        admin INTEGER NOT NULL DEFAULT 0,
+        testo REAL
         )
         """
     )
@@ -89,6 +90,18 @@ def buscar_cadastro(email):
     cursor = conexao.cursor()
 
     registros = cursor.execute("SELECT * FROM cadastros WHERE email = ?", (email,)).fetchone()
+    
+    conexao.close()
+
+    return registros
+
+def buscar_cadastro_id(usuario_id):
+
+    create_table_if_not_exists()
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    registros = cursor.execute("SELECT * FROM cadastros WHERE id = ?", (usuario_id,)).fetchone()
     
     conexao.close()
 
@@ -219,7 +232,6 @@ def treinos_usuario(usuario_id):
     return [registro[0] for registro in registros]
 
 def visualizar_treino(nome_treino, usuario_id):
-
     conexao = sqlite3.connect("gymtrack.db")
     df_treinos_usuario = pd.read_sql_query(
         """
@@ -394,5 +406,172 @@ def atualizar_treino_realizado(df_editado):
     finally:
         conexao.close()
 
-def dados_dashboard():
-    return True
+def listar_usuarios():
+    conexao = sqlite3.connect("gymtrack.db")
+    df = pd.read_sql_query("SELECT id, usuario FROM cadastros", con=conexao)
+
+    return df
+
+def dados_dashboard_metricas(usuario_id, data_inicio, data_final):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    usuario_id = int(usuario_id)
+
+    query = """
+    SELECT
+        COUNT(DISTINCT data_treino),
+        COALESCE(SUM(tempo_corrida), 0),
+        COALESCE(SUM(tempo_corrida * velocidade), 0),
+        COALESCE(SUM(tempo_treino), 0)
+    FROM treinos_dia
+    WHERE usuario_id = ?
+    """
+    params = [usuario_id]
+
+    if data_inicio:
+        query += " AND data_treino >= ?"
+        params.append(data_inicio)
+
+    if data_final:
+        query += " AND data_treino <= ?"
+        params.append(data_final)
+    
+    resultado = cursor.execute(query, params).fetchone()
+
+    conexao.close()
+
+    return resultado
+
+def dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final):
+    conexao = sqlite3.connect("gymtrack.db")
+
+    usuario_id = int(usuario_id)
+    query = (
+        """
+        SELECT 
+            td.data_treino, 
+            e1.exercicio, 
+            td.peso 
+        FROM treinos_dia td 
+        JOIN exercicio_lista e1
+            ON td.exercicio_id = e1.id
+        WHERE td.usuario_id = ? """)
+
+    query_2 = (
+        """
+        SELECT 
+            td.data_treino, 
+            td.velocidade, 
+            td.tempo_corrida 
+        FROM treinos_dia td
+        JOIN exercicio_lista e1
+            ON td.exercicio_id = e1.id
+        WHERE td.usuario_id = ?""")
+
+    query_3 = (
+        """
+        SELECT 
+            data_treino, 
+            COUNT(*) AS quantidade 
+        FROM treinos_dia
+        WHERE usuario_id = ?
+        """)
+
+    query_4 = (
+        """
+        SELECT
+            e1.tipo,
+            COUNT(*) AS quantidade
+        FROM treinos_dia td
+        JOIN exercicio_lista e1
+            ON td.exercicio_id = e1.id
+        WHERE usuario_id = ?
+        GROUP BY e1.tipo"""
+    )
+
+    params = [usuario_id]
+    params_query_3 = [usuario_id]
+
+    if data_inicio:
+        query += " AND td.data_treino >= ?"
+        query_2 += " AND td.data_treino >= ?"
+        query_3 += " AND data_treino >= ?"
+        params.append(data_inicio)
+        params_query_3.append(data_inicio)
+
+    if data_final:
+        query += " AND td.data_treino <= ?"
+        query_2 += " AND td.data_treino <= ?"
+        query_3 += " AND data_treino <= ?"
+        params.append(data_final)
+        params_query_3.append(data_final)
+
+    if exercicio:
+        query += " AND e1.exercicio = ?"
+        query_2 += " AND e1.exercicio = ?"
+        params.append(exercicio)
+
+
+    query_3 += (
+                """
+                GROUP BY data_treino
+                ORDER BY data_treino
+                """
+            )
+
+    df = pd.read_sql_query(query, conexao, params=params)
+    df_speed = pd.read_sql_query(query_2, conexao, params=params)
+    df_count = pd.read_sql_query(query_3, conexao, params=params_query_3)
+    df_types = pd.read_sql_query(query_4, conexao, params=(usuario_id,))
+
+
+    conexao.close()
+
+    return df, df_speed, df_count, df_types
+
+def atualizar_perfil(usuario_id, nome, email, senha, testo):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    try:
+        if senha is not None:
+            cursor.execute(
+                "UPDATE cadastros SET usuario = ?, email = ?, senha_hash = ?, testo = ? WHERE id = ?",
+                params=(nome, email, generate_password_hash(senha), testo, usuario_id)
+                )
+
+        else:
+            cursor.execute(
+                "UPDATE cadastros SET usuario = ?, email = ?, testo = ? WHERE id = ?",
+                params=(nome, email, testo, usuario_id)
+                )
+
+        conexao.commit()
+
+    except Exception:
+        conexao.rollback()
+        raise
+
+    finally:
+        conexao.close()
+
+def atualizar_senha(email, senha):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    try:
+        
+        cursor.execute(
+            "UPDATE cadastros SET senha_hash = ? WHERE email = ?",
+            params=(generate_password_hash(senha), email)
+            )
+
+        conexao.commit()
+
+    except Exception:
+        conexao.rollback()
+        raise
+
+    finally:
+        conexao.close()

@@ -8,8 +8,8 @@ email = st.text_input("Email")
 
 senha = st.text_input("Senha", type="password")
 
-if st.button("Cadastrar"):
-    st.switch_page("pages/register.py")
+st.page_link("pages/register.py", label="Cadastre-se")
+st.page_link("pages/forgot_password.py", label="Esqueceu sua senha?")
 
 if st.button("Enviar"):
 
@@ -33,6 +33,7 @@ if st.button("Enviar"):
         time.sleep(2)
 
         usuario = buscar_cadastro(email)
+        st.session_state.clear()
 
         st.session_state["id"] = usuario[0]
         st.session_state["nome"] = usuario[1]

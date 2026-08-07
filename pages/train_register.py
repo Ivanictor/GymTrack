@@ -122,6 +122,7 @@ with aba_registrar_treino:
             step=1,
             key=f"serie_{i}"
         ))
+        st.divider()
 
     
     if st.button("Enviar treino"):

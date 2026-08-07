@@ -33,21 +33,24 @@ else:
         data_treino = st.date_input(
             "Data do treino",
             max_value=date.today(),
-            value=date.today()
+            value=date.today(),
+            format="DD/MM/YYYY"
         )
 
     with col2:
         data_inicio = st.date_input(
             "Data inicial",
             value=None,
-            max_value=date.today()
+            max_value=date.today(),
+            format="DD/MM/YYYY"
         )
 
     with col3:
         data_final = st.date_input(
             "Data final",
             value=None,
-            max_value=date.today()
+            max_value=date.today(),
+            format="DD/MM/YYYY"
         )
 
 df_exercicios = listar_exercicios(tipo=None)
