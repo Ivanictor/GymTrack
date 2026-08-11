@@ -52,8 +52,10 @@ with st.sidebar:
 
     df_exercicios = listar_exercicios(tipo=None)
     lista_exercicios = df_exercicios["exercicio"]
+    lista_cardio = df_exercicios.query("tipo == 'Aeróbico'")["exercicio"]
 
     exercicio = st.selectbox("Exercício", options=lista_exercicios, index=0)
+    exercicio_cardio = st.selectbox("Exercício Cardio", options=lista_cardio, index=0)
 
     if usuario_admin == 1:
         lista_usuarios = listar_usuarios()
@@ -80,43 +82,111 @@ m3.metric("Distância no cardio", f"{distancia:.1f}km", border=True)
 
 # ----------- Gráficos ------------ #
 
-df_weight, df_cardio, df_count, df_types = dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final)
+df_weight, df_cardio, df_count, df_types = dados_dashboard_graphs(usuario_id, exercicio, exercicio_cardio, data_inicio, data_final)
 
 df_count["data_treino"] = pd.to_datetime(df_count["data_treino"])
-df_count = df_count.groupby(pd.Grouper(key="data_treino", freq="W"))["quantidade"].sum().reset_index()
 
 df_weight["data_treino"] = pd.to_datetime(df_weight["data_treino"])
 df_cardio["data_treino"] = pd.to_datetime(df_cardio["data_treino"])
 
 df_types = df_types.rename(columns={"tipo": "Tipo", "quantidade": "Quantidade"})
 
+# GroupBy
+df_cardio = df_cardio.groupby("data_treino", as_index=False).apply(
+    lambda grupo: pd.Series({
+        "velocidade": (grupo["velocidade"] * grupo["tempo_corrida"]).sum() / grupo["tempo_corrida"].sum(),
+        "tempo_corrida": grupo["tempo_corrida"].sum()
+    })
+)
+
+df_weight = df_weight.sort_values("data_treino")
+
+df_weight = (
+    df_weight.groupby("data_treino", as_index=False)["peso"]
+    .mean() 
+)
+df_count = df_count.groupby(pd.Grouper(key="data_treino", freq="ME"))["quantidade"].sum().reset_index()
+# ----- Gráfico do Peso ------ #
+
+fig_weight = px.line(
+    df_weight,
+    x="data_treino",
+    y="peso",
+    labels={
+        "data_treino": "Data",
+        "peso": "Peso (kg)"
+    }
+)
+
+fig_weight.update_traces(
+    hovertemplate="Data: %{x|%d/%m/%Y}<br>Peso: %{y:.1f} kg<extra></extra>"
+)
+
+# ------- Gráfico Velocidade do cardio ----- #
+
+fig_speed = px.line(
+    df_cardio,
+    x="data_treino",
+    y="velocidade",
+    labels={
+        "data_treino": "Data",
+        "velocidade": "Velocidade (km/h)",
+    }
+)
+
+fig_speed.update_traces(
+    hovertemplate="Data: %{x|%d/%m/%Y}<br>Velocidade: %{y:.1f} km/h<extra></extra>"
+)
+
+# ----- Gráfico Tempo no Cardio ------- #
+
+fig_time = px.line(
+    df_cardio,
+    x="data_treino",
+    y="tempo_corrida",
+    labels={
+        "data_treino": "Data",
+        "tempo_corrida": "Tempo de corrida (min)",
+    }
+)
+
+fig_time.update_traces(
+    hovertemplate="Data: %{x|%d/%m/%Y}<br>Tempo de corrida: %{y:.1f} min<extra></extra>"
+)
+
+# ------- Gráfico Quantidade de Treinos ------- #
+
+
 col1, col2 = st.columns(2)
 
 with col1:
     with st.container(border=True):
         st.subheader("Progressão do Peso no Exercício")
-        st.line_chart(df_weight, x="data_treino", y="peso", x_label="Data", y_label="Peso (kg)")
+        st.plotly_chart(fig_weight, use_container_width=True)
 
     with st.container(border=True):
         st.subheader("Quantidade de Treinos")
-        st.bar_chart(df_count, x="data_treino", y="quantidade", x_label="Data", y_label="Quantidade")
+        st.bar_chart(df_count, x="data_treino", y="quantidade", x_label="Data", y_label="Quantidade", use_container_width=True)
 
 with col2:
     with st.container(border=True):
         st.subheader("Progressão da Velocidade no Cardio")
-        st.line_chart(df_cardio, x="data_treino", y="velocidade", x_label="Data", y_label="Velocidade (km/h)")
+        st.plotly_chart(fig_speed, width="stretch")
 
     with st.container(border=True):
             st.subheader("Progressão do Tempo no Cardio")
-            st.line_chart(df_cardio, x="data_treino", y="tempo_corrida", x_label="Data", y_label="Tempo (min)")
+            st.plotly_chart(fig_time, use_container_width=True)
 
 with st.container(border=True):
-    st.subheader("Exerícios por Tipo")
+    st.subheader("Exercícios por Tipo")
     fig = px.pie(
         df_types,
         names="Tipo",
-        values="Quantidade",
-        title="Distribuição dos Treinos")
+        values="Quantidade"
+        )
+    fig.update_traces(
+        hovertemplate="Tipo: %{label}<br>Quantidade: %{value:.0f}<br>Percentual: %{percent}<extra></extra>"
+    )
     st.plotly_chart(fig)
 
     

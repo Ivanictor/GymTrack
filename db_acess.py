@@ -422,7 +422,7 @@ def dados_dashboard_metricas(usuario_id, data_inicio, data_final):
     SELECT
         COUNT(DISTINCT data_treino),
         COALESCE(SUM(tempo_corrida), 0),
-        COALESCE(SUM(tempo_corrida * velocidade), 0),
+        COALESCE(SUM(tempo_corrida * velocidade/60), 0),
         COALESCE(SUM(tempo_treino), 0)
     FROM treinos_dia
     WHERE usuario_id = ?
@@ -443,7 +443,7 @@ def dados_dashboard_metricas(usuario_id, data_inicio, data_final):
 
     return resultado
 
-def dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final):
+def dados_dashboard_graphs(usuario_id, exercicio, exercicio_cardio, data_inicio, data_final):
     conexao = sqlite3.connect("gymtrack.db")
 
     usuario_id = int(usuario_id)
@@ -491,6 +491,7 @@ def dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final):
     )
 
     params = [usuario_id]
+    params_query_2 = [usuario_id]
     params_query_3 = [usuario_id]
 
     if data_inicio:
@@ -498,19 +499,26 @@ def dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final):
         query_2 += " AND td.data_treino >= ?"
         query_3 += " AND data_treino >= ?"
         params.append(data_inicio)
+        params_query_2.append(data_inicio)
         params_query_3.append(data_inicio)
 
     if data_final:
         query += " AND td.data_treino <= ?"
         query_2 += " AND td.data_treino <= ?"
         query_3 += " AND data_treino <= ?"
+
         params.append(data_final)
+        params_query_2.append(data_final)
         params_query_3.append(data_final)
 
     if exercicio:
         query += " AND e1.exercicio = ?"
-        query_2 += " AND e1.exercicio = ?"
         params.append(exercicio)
+
+    if exercicio_cardio:
+        query_2 += " AND e1.exercicio = ?"
+        params_query_2.append(exercicio_cardio)
+
 
 
     query_3 += (
@@ -521,7 +529,7 @@ def dados_dashboard_graphs(usuario_id, exercicio, data_inicio, data_final):
             )
 
     df = pd.read_sql_query(query, conexao, params=params)
-    df_speed = pd.read_sql_query(query_2, conexao, params=params)
+    df_speed = pd.read_sql_query(query_2, conexao, params=params_query_2)
     df_count = pd.read_sql_query(query_3, conexao, params=params_query_3)
     df_types = pd.read_sql_query(query_4, conexao, params=(usuario_id,))
 
@@ -573,5 +581,34 @@ def atualizar_senha(email, senha):
         conexao.rollback()
         raise
 
+    finally:
+        conexao.close()
+
+def ranking_testo():
+    conexao = sqlite3.connect("gymtrack.db")
+    df = pd.read_sql_query(
+        """
+        SELECT 
+            id, 
+            usuario, 
+            testo 
+        FROM cadastros
+        ORDER BY testo DESC
+        """,
+        conexao
+    )
+
+    return df
+
+def excluir_treinos_realizados(ids):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    try:
+        cursor.executemany(
+            "DELETE FROM treinos_dia WHERE id = ?",
+            [(id_,) for id_ in ids])
+
+        conexao.commit()
     finally:
         conexao.close()

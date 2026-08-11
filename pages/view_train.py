@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import date
 import pandas as pd
-from db_acess import visualizar_treino_diario, listar_exercicios, atualizar_treino_realizado
+from db_acess import visualizar_treino_diario, listar_exercicios, atualizar_treino_realizado, excluir_treinos_realizados
 
 def data_para_br(df, coluna="data_treino"):
     df = df.copy()
@@ -19,7 +19,12 @@ usuario_id = st.session_state["id"]
 
 st.write("Filtros")
 
-remover_filtro = st.checkbox("Mostrar todos os treinos", value=True)
+col1_checkbox, col2_checkbox = st.columns(2)
+
+with col1_checkbox:
+    remover_filtro = st.checkbox("Mostrar todos os treinos", value=True)
+with col2_checkbox:
+    delete_button = st.checkbox("Mostrar botões de excluir", value=False)
 
 if remover_filtro:
     data_treino = None
@@ -71,10 +76,7 @@ daily_train_df = visualizar_treino_diario(
 
 daily_train_df = data_para_br(daily_train_df)
 
-daily_train_df_edit = st.data_editor(
-    daily_train_df,
-    hide_index=True,
-    column_config={
+column_config={
         "id": None,  
 
         "data_treino": st.column_config.TextColumn(
@@ -117,14 +119,45 @@ daily_train_df_edit = st.data_editor(
             "Duração do treino (min)"
         ),
     }
+
+if delete_button:
+    daily_train_df.insert(0, "excluir", False)
+    column_config["excluir"] = st.column_config.CheckboxColumn(
+        "Excluir", 
+        help="Marque os registros que deseja excluir"
+        )
+
+daily_train_df_edit = st.data_editor(
+    daily_train_df,
+    hide_index=True,
+    column_config=column_config
 )
+col1, col2 = st.columns(2)
 
-if st.button("Salvar mudanças"):
-    try:
-        daily_train_df_edit = data_para_sql(daily_train_df_edit)
-        atualizar_treino_realizado(daily_train_df_edit)
+with col1:
+    if st.button("Salvar mudanças"):
+        try:
+            daily_train_df_edit = daily_train_df_edit.drop(columns=["excluir"])
+            daily_train_df_edit = data_para_sql(daily_train_df_edit)
+            atualizar_treino_realizado(daily_train_df_edit)
 
-        st.success("Mudanças salvas")
+            st.success("Mudanças salvas")
 
-    except Exception as e:
-        st.error(f"Erro ao atualizar o exercício: {e}")
+        except Exception as e:
+            st.error(f"Erro ao atualizar o exercício: {e}")
+
+with col2:
+    if st.button("Excluir selecionados"):
+        df_excluir = daily_train_df_edit[daily_train_df_edit["excluir"]]
+        if df_excluir.empty:
+            st.warning("Selecione pelo menos um registro para excluir")
+
+        else:
+            try:
+                ids = df_excluir["id"].tolist()
+                excluir_treinos_realizados(ids)
+                st.success("Registros excluídos")
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Erro ao excluir os registros {e}")

@@ -1,4 +1,8 @@
 import streamlit as st
+from style import aplicar_estilo
+
+st.set_page_config(page_title="GymTrack", page_icon="🦾", layout="wide")
+aplicar_estilo()
 
 #Rotas
 
@@ -15,7 +19,8 @@ else:
     view_train = st.Page("pages/view_train.py", title="Registro de Treinos Realizados")
     dashboard = st.Page("pages/dashboard.py", title="Dashboard")
     profile = st.Page("pages/profile.py", title="Dados de Perfil")
+    testo = st.Page("pages/ranking_testo.py", title="Ranking Testo")
 
-    pg = st.navigation([daily_train, train_register, view_train, dashboard, profile])
+    pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo])
 
 pg.run()
