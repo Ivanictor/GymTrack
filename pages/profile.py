@@ -24,7 +24,7 @@ with st.container(border=True):
         st.text_input("Admin", admin, disabled=True)
 
 
-    st.page_link("pages/daily_train.py", label="Clique aqui se não quiser mudar nada")
+    st.page_link("pages/daily_train.py", label="Clique aqui se não quiser mudar nada", icon="🤸‍♀️")
 
     col1, col2 = st.columns([0.5, 1.5])
 

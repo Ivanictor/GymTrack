@@ -119,6 +119,9 @@ fig_weight = px.line(
 )
 
 fig_weight.update_traces(
+    mode="lines+markers",
+    marker=dict(color="#C6FF3A"),
+    line=dict(color="#C6FF3A"),
     hovertemplate="Data: %{x|%d/%m/%Y}<br>Peso: %{y:.1f} kg<extra></extra>"
 )
 
@@ -135,6 +138,9 @@ fig_speed = px.line(
 )
 
 fig_speed.update_traces(
+    mode="lines+markers",
+    line=dict(color="#C6FF3A"),
+    marker=dict(color="#C6FF3A"),
     hovertemplate="Data: %{x|%d/%m/%Y}<br>Velocidade: %{y:.1f} km/h<extra></extra>"
 )
 
@@ -151,22 +157,38 @@ fig_time = px.line(
 )
 
 fig_time.update_traces(
+    mode="markers",
+    line=dict(color="#C6FF3A"),
+    marker=dict(color="#C6FF3A"),
     hovertemplate="Data: %{x|%d/%m/%Y}<br>Tempo de corrida: %{y:.1f} min<extra></extra>"
 )
 
 # ------- Gráfico Quantidade de Treinos ------- #
+fig_count = px.bar(
+    df_count,
+    x="data_treino",
+    y="quantidade",
+    labels={
+        "data_treino": "Data",
+        "quantidade": "Quantidade",
+    }
+)
 
+fig_count.update_traces(
+    marker=dict(color="#C6FF3A"),
+    hovertemplate="Data: %{x|%d/%m/%Y}<br>Quantidade: %{y:.0f}<extra></extra>"
+)
 
 col1, col2 = st.columns(2)
 
 with col1:
     with st.container(border=True):
         st.subheader("Progressão do Peso no Exercício")
-        st.plotly_chart(fig_weight, use_container_width=True)
+        st.plotly_chart(fig_weight, width="stretch")
 
     with st.container(border=True):
         st.subheader("Quantidade de Treinos")
-        st.bar_chart(df_count, x="data_treino", y="quantidade", x_label="Data", y_label="Quantidade", use_container_width=True)
+        st.plotly_chart(fig_count, width="stretch")
 
 with col2:
     with st.container(border=True):
@@ -175,7 +197,7 @@ with col2:
 
     with st.container(border=True):
             st.subheader("Progressão do Tempo no Cardio")
-            st.plotly_chart(fig_time, use_container_width=True)
+            st.plotly_chart(fig_time, width="stretch")
 
 with st.container(border=True):
     st.subheader("Exercícios por Tipo")
@@ -185,6 +207,15 @@ with st.container(border=True):
         values="Quantidade"
         )
     fig.update_traces(
+         marker=dict(
+            colors=[
+                "#C6FF3A",
+                "#4CAF7D",
+                "#7E57C2",
+                "#29B6F6",
+                "#FFB74D"
+            ]
+        ),
         hovertemplate="Tipo: %{label}<br>Quantidade: %{value:.0f}<br>Percentual: %{percent}<extra></extra>"
     )
     st.plotly_chart(fig)

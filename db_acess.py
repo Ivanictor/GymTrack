@@ -279,6 +279,19 @@ def atualizar_treino(df):
     conexao.commit()
     conexao.close()
 
+def deletar_treino(usuario_id, nome_treino):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        "DELETE FROM treinos_lista WHERE usuario_id = ? AND nome_treino = ?", 
+        params=[usuario_id, nome_treino]
+        )
+    quantidade_excluida = cursor.rowcount
+    conexao.commit()
+    conexao.close()
+    return quantidade_excluida
+
 def exercicios_por_treino(nome_treino, usuario_id):
     conexao = sqlite3.connect("gymtrack.db")
 
@@ -612,3 +625,17 @@ def excluir_treinos_realizados(ids):
         conexao.commit()
     finally:
         conexao.close()
+
+def excluir_exercicio(exercicio_id):
+    conexao = sqlite3.connect("gymtrack.db")
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute(
+            "DELETE FROM exercicio_lista WHERE id = ?",
+            (exercicio_id,))
+        qtd = cursor.rowcount
+        conexao.commit()
+    finally:
+        conexao.close()
+        return qtd

@@ -15,7 +15,7 @@ def aplicar_estilo():
         }
 
         h1 {
-            border-bottom: 3px solid var(--primary-color) !important;
+            border-bottom: 3px solid #C6FF3A !important;
             padding-bottom: 0.5rem !important;
             margin-bottom: 2rem !important;
             display: inline-block !important;
@@ -40,6 +40,10 @@ def aplicar_estilo():
         div[data-testid="stDataFrame"], div[data-testid="stDataEditor"] {
             border-radius: 10px !important;
             overflow: hidden !important;
+        }
+
+        div[data-testid="stButton"] button {
+            border: 1px solid #C6FF3A !important;
         }
     </style>
     """, unsafe_allow_html=True)

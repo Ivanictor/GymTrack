@@ -7,13 +7,19 @@ from db_acess import (criar_exercicio,
                       busca_id_por_exercicio, 
                       treinos_usuario, 
                       visualizar_treino, 
-                      atualizar_treino)
+                      atualizar_treino,
+                      deletar_treino,
+                      excluir_exercicio)
+
+admin = st.session_state["admin"]
 
 st.title("GymTrack 🦾 - Cadastro de Treinos")
 
 aba_registrar_treino, aba_registrar_exercicio, aba_visualizar = st.tabs(
     ["Cadastrar treinos", "Registrar exercício", "Visualizar treinos"]
     )
+
+usuario_id = st.session_state["id"]
 with aba_registrar_exercicio:
 
     with st.form("cadastro_exercicio", clear_on_submit=True):
@@ -46,31 +52,56 @@ with aba_registrar_exercicio:
                     time.sleep(2)
                     st.rerun()
 
+    with st.container(border=True):
+        st.markdown(
+        """
+        <p style="
+            font-family: Arial;
+            font-size: 30px;
+            font-weight:bold;
+        ">
+            Lista de Exercícios
+        </p>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(
-    """
-    <p style="
-        font-family: Arial;
-        font-size: 30px;
-        font-weight:bold;
-    ">
-        Lista de Exercícios
-    </p>
-    """,
-    unsafe_allow_html=True,
-)
+        tipo = st.radio(
+                "Tipo de treino", ["Superior", "Inferior", "Aeróbico"], 
+                index=None)
+        
+        df = listar_exercicios(tipo)
+        df = df.rename(columns={
+            "exercicio": "Exercício",
+            "tipo": "Tipo"
+        })
 
-    tipo = st.radio(
-            "Tipo de treino", ["Superior", "Inferior", "Aeróbico"], 
-            index=None)
-    
-    df = listar_exercicios(tipo)
-    df = df.rename(columns={
-        "exercicio": "Exercício",
-        "tipo": "Tipo"
-    })
+        st.dataframe(df[["Exercício", "Tipo"]], hide_index=True)
 
-    st.dataframe(df[["Exercício", "Tipo"]], hide_index=True)
+    if admin == 1:
+        with st.container(border=True):
+                st.markdown(
+                """
+                <p style="
+                    font-family: Arial;
+                    font-size: 30px;
+                    font-weight:bold;
+                ">
+                    Excluir exercícios
+                </p>
+                """,
+                unsafe_allow_html=True,
+            )
+                df = listar_exercicios()
+                exercicios_lista = df["exercicio"].tolist()
+
+                exercicio_excluir = st.selectbox("Selecione o exercício para excluir", options=exercicios_lista)
+
+                if st.button("Excluir"):
+                    id_exercicio = busca_id_por_exercicio(exercicio_excluir)
+                    qtd = excluir_exercicio(id_exercicio)
+                    st.success("Exercício excluído")
+                    time.sleep(1)
     
 with aba_registrar_treino:
 
@@ -183,11 +214,22 @@ with aba_visualizar:
                 ),
             },
             hide_index=True)
+        
+        col1, col2 = st.columns(2)
 
-        if st.button("Salvar alterações nesse treino?"):
-            atualizar_treino(df_editado)
-            st.success("Treino alterado com sucesso")
+        with col1:
+            if st.button("Salvar alterações nesse treino?"):
+                atualizar_treino(df_editado)
+                st.success("Treino alterado com sucesso")
+        with col2:
+            if st.button("Excluir esse treino?"):
+                quantidade_excluida = deletar_treino(usuario_id, nome_treino)
 
+                if quantidade_excluida == 0:
+                    st.warning("Nenhum treino foi encontrado.")
+                else:
+                    st.success("Treino excluído com sucesso")
+        time.sleep(1)
 
 
 
