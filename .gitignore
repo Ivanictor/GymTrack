@@ -1,3 +1,13 @@
 # Python
 __pycache__/
 *.pyc
+
+#Secrets
+secrets.toml
+
+#Venv
+venv/
+
+#Banco de dados local
+*.db
+*.db-journal
