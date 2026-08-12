@@ -6,11 +6,11 @@ Este site fornece uma plataforma para que os usuários organizem e registrem seu
 
 O projeto foi executado com o uso das seguintes ferramentas:
 
-`Python`: linguagem principal
-`Streamlit`: construção da interface web
-`SQLite`: banco de dados
-`Plotly`: criação de gráficos interativos para os dashboards
-`Pandas`: manipulação e análise de dados
+`Python`: linguagem principal <br>
+`Streamlit`: construção da interface web <br>
+`SQLite`: banco de dados <br>
+`Plotly`: criação de gráficos interativos para os dashboards <br>
+`Pandas`: manipulação e análise de dados <br>
 
 A interface da aplicação foi desenvolvida utilizando Streamlit, que permite a sua criação diretamente em Python. 
 
