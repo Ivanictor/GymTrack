@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
 import plotly.express as px
-from db_acess import listar_usuarios, dados_dashboard_metricas, listar_exercicios, dados_dashboard_graphs, query_cadastros
+from db_acess import listar_usuarios, dados_dashboard_metricas, listar_exercicios, dados_dashboard_graphs
 
 def horas_e_minutos(tempo):
     horas = int(tempo/60)
@@ -178,11 +178,6 @@ fig_count.update_traces(
     marker=dict(color="#C6FF3A"),
     hovertemplate="Data: %{x|%d/%m/%Y}<br>Quantidade: %{y:.0f}<extra></extra>"
 )
-
-df_teste = query_cadastros()
-st.dataframe(df_teste)
-
-# -------- Plot dos Gráficos ---------- #
 
 col1, col2 = st.columns(2)
 
