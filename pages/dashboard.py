@@ -100,12 +100,13 @@ df_cardio = df_cardio.groupby("data_treino", as_index=False).apply(
 )
 
 df_weight = df_weight.sort_values("data_treino")
-df_weight["data_str"] = df_weight["data_treino"].dt.strftime("%d/%m/%Y")
 
 df_weight = (
     df_weight.groupby("data_treino", as_index=False)["peso"]
     .mean() 
 )
+df_weight["data_str"] = df_weight["data_treino"].dt.strftime("%d/%m/%Y")
+
 df_count = df_count.groupby(pd.Grouper(key="data_treino", freq="ME"))["quantidade"].sum().reset_index()
 df_count["mes"] = df_count["data_treino"].dt.strftime("%m/%Y")
 # ----- Gráfico do Peso ------ #
