@@ -84,6 +84,10 @@ m4.metric("Tempo de corrida", f"{tempo_corrida[0]}h{tempo_corrida[1]}min", borde
 
 df_weight, df_cardio, df_count, df_types = dados_dashboard_graphs(usuario_id, exercicio, exercicio_cardio, data_inicio, data_final)
 
+if df_weight.empty and df_cardio.empty and df_count.empty:
+    st.info("Não há dados suficientes para exibir o dashboard neste período.")
+    st.stop()
+
 df_count["data_treino"] = pd.to_datetime(df_count["data_treino"])
 
 df_weight["data_treino"] = pd.to_datetime(df_weight["data_treino"])
