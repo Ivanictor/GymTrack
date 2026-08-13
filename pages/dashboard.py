@@ -109,6 +109,11 @@ df_weight["data_str"] = df_weight["data_treino"].dt.strftime("%d/%m/%Y")
 
 df_count = df_count.groupby(pd.Grouper(key="data_treino", freq="ME"))["quantidade"].sum().reset_index()
 df_count["mes"] = df_count["data_treino"].dt.strftime("%m/%Y")
+
+#Criação das labels do eixo X
+
+df_cardio["data_str"] = df_cardio["data_treino"].dt.strftime("%d/%m/%Y")
+
 # ----- Gráfico do Peso ------ #
 
 fig_weight = px.line(
@@ -132,10 +137,10 @@ fig_weight.update_traces(
 
 fig_speed = px.line(
     df_cardio,
-    x="data_treino",
+    x="data_str",
     y="velocidade",
     labels={
-        "data_treino": "Data",
+        "data_str": "Data",
         "velocidade": "Velocidade (km/h)",
     }
 )
@@ -151,10 +156,10 @@ fig_speed.update_traces(
 
 fig_time = px.line(
     df_cardio,
-    x="data_treino",
+    x="data_str",
     y="tempo_corrida",
     labels={
-        "data_treino": "Data",
+        "data_str": "Data",
         "tempo_corrida": "Tempo de corrida (min)",
     }
 )
