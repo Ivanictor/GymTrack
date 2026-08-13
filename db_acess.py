@@ -155,7 +155,6 @@ def query_cadastros():
     df = df.drop(columns=["senha_hash", "testo"])
     return df
 
-
 def buscar_senha(email, senha):
     create_table_if_not_exists()
     conexao = get_connection()
