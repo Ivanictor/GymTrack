@@ -85,7 +85,7 @@ with st.container(border=True):
             if tipo_exercicio == "Aeróbico":
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=0,
+                    value=0.0,
                     disabled=True,
                 ))
                 speeds.append(st.number_input(
@@ -103,14 +103,14 @@ with st.container(border=True):
             else:
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=1,
-                    min_value=1,
-                    step=1,
+                    value=1.0,
+                    min_value=1.0,
+                    step=0.1,
                     key=f"peso_{i}"
                 ))
                 speeds.append(st.number_input(
                     f"Velocidade do exercício {i+1}, em km/h",
-                    value=0,
+                    value=0.0,
                     disabled=True
                 ))
                 time_run.append(st.number_input(
@@ -172,7 +172,7 @@ with st.container(border=True):
             if tipo_exercicio == "Aeróbico":
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=0,
+                    value=0.0,
                     disabled=True,
                     key=f"{treino}_peso_{i}"
                 ))
@@ -193,13 +193,13 @@ with st.container(border=True):
             else:
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=1,
-                    min_value=1,
-                    step=1
+                    value=1.0,
+                    min_value=1.0,
+                    step=0.1
                 ))
                 speeds.append(st.number_input(
                     f"Velocidade do exercício {i+1}, em km/h",
-                    value=0,
+                    value=0.0,
                     disabled=True
                 ))
                 time_run.append(st.number_input(

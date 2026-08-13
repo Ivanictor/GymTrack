@@ -137,7 +137,8 @@ col1, col2 = st.columns(2)
 with col1:
     if st.button("Salvar mudanças"):
         try:
-            daily_train_df_edit = daily_train_df_edit.drop(columns=["excluir"])
+            if delete_button:
+                daily_train_df_edit = daily_train_df_edit.drop(columns=["excluir"])
             daily_train_df_edit = data_para_sql(daily_train_df_edit)
             atualizar_treino_realizado(daily_train_df_edit)
 

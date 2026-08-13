@@ -3,17 +3,6 @@ import pandas as pd
 from sqlalchemy import create_engine
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-# ---------------------------------------------------------------------------
-# Conexão / Engine
-# ---------------------------------------------------------------------------
-# Em st.secrets (secrets.toml ou painel do Streamlit Cloud), configure:
-#
-# DB_URL = "postgresql+psycopg2://usuario:senha@host:6543/postgres"
-#
-# Use a porta do POOLER (ex: 6543 no Supabase), não a conexão direta.
-# No Neon, use a connection string "pooled" que eles fornecem.
-
 @st.cache_resource
 def get_engine():
     return create_engine(
@@ -487,7 +476,7 @@ def visualizar_treino_diario(usuario_id, data_treino=None, data_inicio=None, dat
 
     query += order
 
-    df = pd.read_sql_query(query, engine, params=params)
+    df = pd.read_sql_query(query, engine, params=tuple(params)) #Foi iniciado como lista, termina como tupla
 
     return df
 
@@ -739,9 +728,9 @@ def dados_dashboard_graphs(usuario_id, exercicio, exercicio_cardio, data_inicio,
         ORDER BY data_treino
         """
 
-    df = pd.read_sql_query(query, engine, params=params)
-    df_speed = pd.read_sql_query(query_2, engine, params=params_query_2)
-    df_count = pd.read_sql_query(query_3, engine, params=params_query_3)
+    df = pd.read_sql_query(query, engine, params=tuple(params))
+    df_speed = pd.read_sql_query(query_2, engine, params=tuple(params_query_2))
+    df_count = pd.read_sql_query(query_3, engine, params=tuple(params_query_3))
     df_types = pd.read_sql_query(query_4, engine, params=(usuario_id,))
 
     return df, df_speed, df_count, df_types

@@ -65,7 +65,7 @@ with st.sidebar:
 
 # ------------ Métricas ------------ #
 
-m1, m2, m3 = st.columns([1, 1.4, 1.4])
+m1, m2, m3, m4 = st.columns([1, 1.4, 1.4, 1.4])
 
 qtd_treinos, tempo_corrida, distancia, tempo_total = dados_dashboard_metricas(usuario_id, 
                                                                                 data_inicio, 
@@ -75,9 +75,9 @@ tempo_corrida = horas_e_minutos(tempo_corrida)
 tempo_total = horas_e_minutos(tempo_total)
 
 m1.metric("Idas à academia", qtd_treinos, border=True)
-m2.metric("Tempo de cardio", f"{tempo_total[0]}h{tempo_total[1]}min", border=True)
+m2.metric("Tempo de treino", f"{tempo_total[0]}h{tempo_total[1]}min", border=True)
 m3.metric("Distância no cardio", f"{distancia:.1f}km", border=True)
-#m4.metric("Tempo de treino", f"{tempo_total[0]}h{tempo_total[1]}min", border=True)
+m4.metric("Tempo de corrida", f"{tempo_corrida[0]}h{tempo_corrida[1]}min", border=True)
 
 
 # ----------- Gráficos ------------ #

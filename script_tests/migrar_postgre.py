@@ -32,6 +32,8 @@ def migrar():
     pg_engine = create_engine(PG_URL)
 
     for tabela in TABELAS:
+        if tabela == "cadastros": #Já foi atualizada
+            continue
         df = pd.read_sql_query(f"SELECT * FROM {tabela}", sqlite_conn)
 
         if df.empty:
