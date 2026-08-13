@@ -343,8 +343,8 @@ def visualizar_treino(nome_treino, usuario_id):
             el.exercicio,
             tl.repeticoes,
             tl.series,
-            t1.peso,
-            t1.velocidade,
+            tl.peso,
+            tl.velocidade
         FROM treinos_lista tl
         JOIN exercicio_lista el
             ON tl.exercicio_id = el.id
@@ -422,8 +422,8 @@ def exercicios_por_treino(nome_treino, usuario_id):
             el.exercicio,
             tl.repeticoes,
             tl.series,
-            t1.peso,
-            t1.velocidade
+            tl.peso,
+            tl.velocidade
         FROM treinos_lista tl
         JOIN exercicio_lista el
             ON tl.exercicio_id = el.id
