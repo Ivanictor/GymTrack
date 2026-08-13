@@ -112,10 +112,10 @@ df_count["mes"] = df_count["data_treino"].dt.strftime("%m/%Y")
 
 fig_weight = px.line(
     df_weight,
-    x="data_treino",
+    x="data_str",
     y="peso",
     labels={
-        "data_treino": "Data",
+        "data_str": "Data",
         "peso": "Peso (kg)"
     }
 )
