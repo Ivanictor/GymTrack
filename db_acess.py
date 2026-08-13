@@ -607,16 +607,28 @@ def atualizar_senha(email, senha):
         conexao.close()
 
 
-def ranking_testo():
+def ranking_testo(testo=True):
     engine = get_engine()
-    df = pd.read_sql_query(
-        """
-        SELECT id, usuario, testo
-        FROM cadastros
-        ORDER BY testo DESC
-        """,
-        engine,
-    )
+    if testo:
+        df = pd.read_sql_query(
+            """
+            SELECT id, usuario, testo
+            FROM cadastros
+            ORDER BY testo DESC
+            """,
+            engine,
+        )
+
+    elif not testo:
+        df = pd.read_sql_query(
+            """
+            SELECT id, usuario, email
+            FROM cadastros
+            ORDER BY usuario
+            """,
+            engine,
+        )
+        
     return df
 
 
