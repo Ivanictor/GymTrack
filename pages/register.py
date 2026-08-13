@@ -43,4 +43,4 @@ if st.button("Enviar"):
     else:
         salvar_cadastro(nome, email, senha_1)
         st.success("Cadastro realizado com sucesso")
-        st.switch_page("login.py")
+        st.switch_page("pages/login.py")
