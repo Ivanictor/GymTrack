@@ -33,7 +33,7 @@ with st.container(border=True):
         else:
             st.success("Login bem sucedido")
             st.balloons()
-            time.sleep(2)
+            time.sleep(1)
 
             usuario = buscar_cadastro(email)
             st.session_state.clear()

@@ -7,4 +7,4 @@ st.subheader("Usuários cadastrados")
 
 df = ranking_testo(testo=False)
 
-st.dataframe(df)
+st.dataframe(df, hide_index=True)
