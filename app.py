@@ -21,6 +21,11 @@ else:
     profile = st.Page("pages/profile.py", title="Dados de Perfil")
     testo = st.Page("pages/ranking_testo.py", title="Ranking Testo")
 
-    pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo])
+    if st.session_state["admin"] == 1:
+        admin = st.Page("pages/admin.py", title="Admin")
+        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo, admin])
+
+    else:
+        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo])
 
 pg.run()

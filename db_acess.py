@@ -146,6 +146,15 @@ def buscar_cadastro_id(usuario_id):
     finally:
         conexao.close()
 
+def buscar_todos_cadastros():
+    engine = get_engine()
+    df = pd.read_sql_query(
+                "SELECT * FROM cadastros",
+                engine,
+            )
+    df = df.drop(columns=["senha_hash", "testo"])
+    return df
+
 
 def buscar_senha(email, senha):
     create_table_if_not_exists()
