@@ -106,6 +106,7 @@ df_weight = (
     .mean() 
 )
 df_count = df_count.groupby(pd.Grouper(key="data_treino", freq="ME"))["quantidade"].sum().reset_index()
+df_count["mes"] = df_count["data_treino"].dt.strftime("%m/%Y")
 # ----- Gráfico do Peso ------ #
 
 fig_weight = px.line(
@@ -166,10 +167,10 @@ fig_time.update_traces(
 # ------- Gráfico Quantidade de Treinos ------- #
 fig_count = px.bar(
     df_count,
-    x="data_treino",
+    x="mes",
     y="quantidade",
     labels={
-        "data_treino": "Data",
+        "mes": "Data",
         "quantidade": "Quantidade",
     }
 )
