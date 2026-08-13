@@ -643,13 +643,10 @@ def dados_dashboard_metricas(usuario_id, data_inicio, data_final):
     usuario_id = int(usuario_id)
 
     query = """
-    SELECT
-        COUNT(DISTINCT data_treino),
-        COALESCE(SUM(tempo_corrida), 0),
-        COALESCE(SUM(tempo_corrida * velocidade / 60), 0),
-        COALESCE(SUM(tempo_treino), 0)
-    FROM treinos_dia
-    WHERE usuario_id = %s
+    WITH filtrado AS (
+        SELECT *
+        FROM treinos_dia
+        WHERE usuario_id = %s
     """
     params = [usuario_id]
 
@@ -660,6 +657,21 @@ def dados_dashboard_metricas(usuario_id, data_inicio, data_final):
     if data_final:
         query += " AND data_treino <= %s::date"
         params.append(data_final)
+
+    query += """
+    ),
+    por_dia AS (
+        SELECT data_treino, AVG(tempo_treino) AS tempo_treino_dia
+        FROM filtrado
+        GROUP BY data_treino
+    )
+    SELECT
+        COUNT(DISTINCT filtrado.data_treino),
+        COALESCE(SUM(filtrado.tempo_corrida), 0),
+        COALESCE(SUM(filtrado.tempo_corrida * filtrado.velocidade / 60), 0),
+        COALESCE((SELECT SUM(tempo_treino_dia) FROM por_dia), 0)
+    FROM filtrado
+    """
 
     try:
         cursor.execute(query, params)
