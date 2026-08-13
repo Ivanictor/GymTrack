@@ -100,6 +100,7 @@ df_cardio = df_cardio.groupby("data_treino", as_index=False).apply(
 )
 
 df_weight = df_weight.sort_values("data_treino")
+df_weight["data_str"] = df_weight["data_treino"].dt.strftime("%d/%m/%Y")
 
 df_weight = (
     df_weight.groupby("data_treino", as_index=False)["peso"]
