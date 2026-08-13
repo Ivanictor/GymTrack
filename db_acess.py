@@ -146,7 +146,7 @@ def buscar_cadastro_id(usuario_id):
     finally:
         conexao.close()
 
-def buscar_todos_cadastros():
+def query_cadastros():
     engine = get_engine()
     df = pd.read_sql_query(
                 "SELECT * FROM cadastros",
