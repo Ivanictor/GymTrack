@@ -66,7 +66,9 @@ def create_table_if_not_exists():
             usuario_id INTEGER NOT NULL,
             exercicio_id INTEGER NOT NULL,
             repeticoes INTEGER NOT NULL,
-            series INTEGER NOT NULL
+            series INTEGER NOT NULL,
+            peso REAL NOT NULL DEFAULT 0,
+            velocidade REAL NOT NULL DEFAULT 0
             )
             """
         )
@@ -340,7 +342,9 @@ def visualizar_treino(nome_treino, usuario_id):
             tl.id,
             el.exercicio,
             tl.repeticoes,
-            tl.series
+            tl.series,
+            t1.peso,
+            t1.velocidade,
         FROM treinos_lista tl
         JOIN exercicio_lista el
             ON tl.exercicio_id = el.id
@@ -367,13 +371,17 @@ def atualizar_treino(df):
                 UPDATE treinos_lista
                 SET exercicio_id = %s,
                     repeticoes = %s,
-                    series = %s
+                    series = %s,
+                    peso = %s,
+                    velocidade = %s
                 WHERE id = %s
                 """,
                 (
                     exercicio_id,
                     linha["repeticoes"],
                     linha["series"],
+                    linha["peso"],
+                    linha["velocidade"],
                     linha["id"],
                 ),
             )
@@ -413,7 +421,9 @@ def exercicios_por_treino(nome_treino, usuario_id):
         SELECT
             el.exercicio,
             tl.repeticoes,
-            tl.series
+            tl.series,
+            t1.peso,
+            t1.velocidade
         FROM treinos_lista tl
         JOIN exercicio_lista el
             ON tl.exercicio_id = el.id

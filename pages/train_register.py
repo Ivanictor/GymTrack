@@ -212,6 +212,16 @@ with aba_visualizar:
                     min_value=1,
                     step=1,
                 ),
+                "peso": st.column_config.NumberColumn(
+                    "Peso (kg)",
+                    min_value=0.0,
+                    step=0.1,
+                ),
+                "velocidade": st.column_config.NumberColumn(
+                    "Velocidade (km/h)",
+                    min_value=0.0,
+                    step=0.1,
+                )
             },
             hide_index=True)
         
