@@ -32,8 +32,7 @@ def create_table_if_not_exists():
 
     try:
         # Necessário para unicidade case-insensitive (substitui COLLATE NOCASE do SQLite).
-        # Caso o usuário de conexão não tenha permissão para criar extensões,
-        # habilite manualmente no SQL editor do Supabase/Neon: CREATE EXTENSION citext;
+
         cursor.execute("CREATE EXTENSION IF NOT EXISTS citext")
 
         cursor.execute(
