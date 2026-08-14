@@ -134,7 +134,7 @@ fig_weight.update_traces(
     mode="lines+markers",
     marker=dict(color="#C6FF3A"),
     line=dict(color="#C6FF3A"),
-    hovertemplate="Data: %{x|%d/%m/%Y}<br>Peso: %{y:.1f} kg<extra></extra>"
+    hovertemplate="Data: %{x}<br>Peso: %{y:.1f} kg<extra></extra>"
 )
 
 # ------- Gráfico Velocidade do cardio ----- #
@@ -153,7 +153,7 @@ fig_speed.update_traces(
     mode="lines+markers",
     line=dict(color="#C6FF3A"),
     marker=dict(color="#C6FF3A"),
-    hovertemplate="Data: %{x|%d/%m/%Y}<br>Velocidade: %{y:.1f} km/h<extra></extra>"
+    hovertemplate="Data: %{x}<br>Velocidade: %{y:.1f} km/h<extra></extra>"
 )
 
 # ----- Gráfico Tempo no Cardio ------- #
@@ -172,7 +172,7 @@ fig_time.update_traces(
     mode="markers",
     line=dict(color="#C6FF3A"),
     marker=dict(color="#C6FF3A"),
-    hovertemplate="Data: %{x|%d/%m/%Y}<br>Tempo de corrida: %{y:.1f} min<extra></extra>"
+    hovertemplate="Data: %{x}<br>Tempo de corrida: %{y:.1f} min<extra></extra>"
 )
 
 # ------- Gráfico Quantidade de Treinos ------- #
@@ -188,7 +188,7 @@ fig_count = px.bar(
 
 fig_count.update_traces(
     marker=dict(color="#C6FF3A"),
-    hovertemplate="Data: %{x|%d/%m/%Y}<br>Quantidade: %{y:.0f}<extra></extra>"
+    hovertemplate="Data: %{x}<br>Quantidade: %{y:.0f}<extra></extra>"
 )
 
 col1, col2 = st.columns(2)
