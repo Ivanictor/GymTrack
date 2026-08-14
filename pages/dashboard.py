@@ -190,7 +190,6 @@ fig_count.update_traces(
     marker=dict(color="#C6FF3A"),
     hovertemplate="Data: %{x}<br>Quantidade: %{y:.0f}<extra></extra>"
 )
-
 col1, col2 = st.columns(2)
 
 with col1:

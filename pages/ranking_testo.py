@@ -6,6 +6,7 @@ st.title("GymTrack 🦾 - Ranking de Testo")
 df_testo = ranking_testo()
 df_testo = df_testo.drop(columns=["id"])
 df_testo = df_testo.dropna(subset=["testo"])
+df_testo = df_testo.reset_index(drop=True)
 
 df_testo = df_testo.rename(columns={
     "usuario": "Usuário",
