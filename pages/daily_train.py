@@ -172,14 +172,14 @@ with st.container(border=True):
             if tipo_exercicio == "Aeróbico":
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=0.0,
+                    value=workout_df["peso"].iloc[i],
                     disabled=True,
                     key=f"{treino}_peso_{i}"
                 ))
                 speeds.append(st.number_input(
                     f"Velocidade do exercício {i+1}, em km/h",
                     min_value=0.5,
-                    value=6.0,
+                    value=workout_df["velocidade".iloc[i]],
                     step=0.1,
                     key=f"{treino}_velocidade_{i}"
                 ))
@@ -193,13 +193,13 @@ with st.container(border=True):
             else:
                 weights.append(st.number_input(
                     f"Peso do exercício {i+1}",
-                    value=1.0,
+                    value=workout_df["peso"].iloc[i],
                     min_value=1.0,
                     step=0.1
                 ))
                 speeds.append(st.number_input(
                     f"Velocidade do exercício {i+1}, em km/h",
-                    value=0.0,
+                    value=workout_df["velocidade"].iloc[i],
                     disabled=True
                 ))
                 time_run.append(st.number_input(

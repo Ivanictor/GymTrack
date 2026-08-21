@@ -122,6 +122,8 @@ with aba_registrar_treino:
     exercicios = []
     series_ex = []
     repeticoes = []
+    pesos = []
+    velocidades = []
 
     quantidade = st.number_input(
         "Quantidade de exercícios",
@@ -153,6 +155,22 @@ with aba_registrar_treino:
             step=1,
             key=f"serie_{i}"
         ))
+
+        pesos.append(st.number_input(
+            f"Peso do exercício {i+1} (se aeróbico, coloque 0)",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            key=f"peso_{i}"
+        ))
+        pesos.append(st.number_input(
+            f"Velocidade do exercício {i+1} (se não for aeróbico, coloque 0)",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            key=f"velocidade_{i}"
+        ))
+
         st.divider()
 
     
@@ -173,6 +191,8 @@ with aba_registrar_treino:
             df_treino["exercicio_id"] = exercicios
             df_treino["repeticoes"] = repeticoes
             df_treino["series"] = series_ex
+            df_treino["peso"] = pesos
+            df_treino["velocidade"] = velocidades
 
             criar_treino(nome_treino, df_treino, usuario)
             st.success("Treino cadastrado")
@@ -212,6 +232,16 @@ with aba_visualizar:
                     min_value=1,
                     step=1,
                 ),
+                "peso": st.column_config.NumberColumn(
+                    "Peso (kg)",
+                    min_value=0.0,
+                    step=0.1,
+                ),
+                "velocidade": st.column_config.NumberColumn(
+                    "Velocidade (km/h)",
+                    min_value=0.0,
+                    step=0.1,
+                )
             },
             hide_index=True)
         
