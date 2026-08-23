@@ -8,7 +8,7 @@ O projeto foi executado com o uso das seguintes ferramentas:
 
 `Python`: linguagem principal <br>
 `Streamlit`: construção da interface web <br>
-`SQLite`: banco de dados <br>
+`PostgreSQL`: banco de dados <br>
 `Plotly`: criação de gráficos interativos para os dashboards <br>
 `Pandas`: manipulação e análise de dados <br>
 
