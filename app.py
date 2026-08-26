@@ -19,13 +19,12 @@ else:
     view_train = st.Page("pages/view_train.py", title="Registro de Treinos Realizados")
     dashboard = st.Page("pages/dashboard.py", title="Dashboard")
     profile = st.Page("pages/profile.py", title="Dados de Perfil")
-    testo = st.Page("pages/ranking_testo.py", title="Ranking Testo")
 
     if st.session_state["admin"] == 1:
         admin = st.Page("pages/admin.py", title="Admin")
-        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo, admin])
+        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, admin])
 
     else:
-        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile, testo])
+        pg = st.navigation([daily_train, train_register, view_train, dashboard, profile])
 
 pg.run()

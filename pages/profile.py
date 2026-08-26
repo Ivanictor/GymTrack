@@ -18,7 +18,6 @@ with st.container(border=True):
 
     nova_senha_2 = st.text_input("Repita a senha", type="password")
 
-    testo = st.number_input("Testosterona, em ng/dL (opcional)", min_value=0.0, step=0.01)
 
     if admin == 1:
         st.text_input("Admin", admin, disabled=True)
@@ -43,12 +42,10 @@ with st.container(border=True):
             if erros:
                 st.error(f"Corrija as seguintes pendências:\n\n-" + "\n- ".join(erros))
             else:
-                if not testo:
-                    testo = 0
                 if not nova_senha:
                     nova_senha = None
                 try:
-                    atualizar_perfil(usuario_id, novo_nome, novo_email, nova_senha, testo)
+                    atualizar_perfil(usuario_id, novo_nome, novo_email, nova_senha)
                     time.sleep(2)
 
                 except Exception as e:
