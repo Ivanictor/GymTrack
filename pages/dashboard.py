@@ -198,7 +198,7 @@ with col1:
         st.plotly_chart(fig_weight, width="stretch")
 
     with st.container(border=True):
-        st.subheader("Quantidade de Treinos")
+        st.subheader("Quantidade de Exercícios")
         st.plotly_chart(fig_count, width="stretch")
 
 with col2:
