@@ -163,7 +163,7 @@ with aba_registrar_treino:
             step=0.1,
             key=f"peso_{i}"
         ))
-        pesos.append(st.number_input(
+        velocidades.append(st.number_input(
             f"Velocidade do exercício {i+1} (se não for aeróbico, coloque 0)",
             min_value=0.0,
             value=0.0,
