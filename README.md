@@ -25,4 +25,4 @@ git clone https://github.com/Ivanictor/GymTrack.git
 cd GymTrack
 streamlit run app.py
 ```
-
+A execução requer que o usuário crie uma conta e registre o banco de dados com login e senha no .env do projeto local. O site em produção foi lançado no Streamlit Community Cloud 
