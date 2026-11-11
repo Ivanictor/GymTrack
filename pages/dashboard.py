@@ -194,7 +194,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     with st.container(border=True):
-        st.subheader(f"Progressão do Peso no Exercício {exercicio}")
+        st.subheader(f"Progressão do Peso no Exercício '{exercicio}'")
         st.plotly_chart(fig_weight, width="stretch")
 
     with st.container(border=True):
