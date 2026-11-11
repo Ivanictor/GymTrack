@@ -194,7 +194,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     with st.container(border=True):
-        st.subheader("Progressão do Peso no Exercício")
+        st.subheader(f"Progressão do Peso no Exercício {exercicio}")
         st.plotly_chart(fig_weight, width="stretch")
 
     with st.container(border=True):
@@ -203,11 +203,11 @@ with col1:
 
 with col2:
     with st.container(border=True):
-        st.subheader("Progressão da Velocidade no Cardio")
+        st.subheader(f"Progressão da Velocidade no(a) {exercicio_cardio}")
         st.plotly_chart(fig_speed, width="stretch")
 
     with st.container(border=True):
-            st.subheader("Progressão do Tempo no Cardio")
+            st.subheader(f"Progressão do Tempo no(a) {exercicio_cardio}")
             st.plotly_chart(fig_time, width="stretch")
 
 with st.container(border=True):
